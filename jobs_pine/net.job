@@ -1,0 +1,8 @@
+#!/bin/sh
+#SBATCH --nodes=2 --ntasks-per-node=1
+#SBATCH --partition=rh2288
+#SBATCH --job-name=net
+
+cd $SLURM_SUBMIT_DIR
+
+mpiexec -n 2 numactl --cpunodebind=0 --membind=0 ./main ./output_pine/output_net.txt
