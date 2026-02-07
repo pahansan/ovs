@@ -1,3 +1,5 @@
 main
 *.txt
 *.out
+venv
+*.png
