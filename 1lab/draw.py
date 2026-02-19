@@ -53,10 +53,16 @@ def main():
 
     plt.figure(figsize=(10, 6))
     plt.plot(sizes, times, marker='o', linestyle='-', linewidth=2, markersize=6, color='blue')
-    plt.xlabel('Размер сообщения m, байт', fontsize=12)
+    plt.xlabel('Размер сообщения m, Mбайт', fontsize=12)
     plt.ylabel('Время обмена t, с', fontsize=12)
     plt.title('Зависимость t(m) времени обмена от размера сообщения', fontsize=14, fontweight='bold')
     plt.grid(True, linestyle='--', alpha=0.7)
+
+    x_labels = [x / (2 ** 20) for x in sizes]
+    # y_labels = [round(y, 3) for y in times]
+    plt.xticks(sizes, x_labels, rotation=45, ha='right')
+    # plt.yticks(times, rotation=45, ha='right')
+
     plt.tight_layout()
 
     try:
