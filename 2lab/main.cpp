@@ -3,16 +3,24 @@
 #include <cstddef>
 #include <cstdlib>
 #include <ctime>
+#include <fstream>
 #include <functional>
 #include <iostream>
 #include <iterator>
 #include <map>
 #include <ostream>
+#include <random>
+#include <sstream>
+#include <string>
+#include <string_view>
 #include <vector>
 
 struct Task {
   size_t t, r;
   Task(size_t t, size_t r) : t(t), r(r) {}
+  std::string to_string() const {
+    return std::to_string(t) + " " + std::to_string(r);
+  }
   bool operator>(const Task &other) const { return t > other.t; }
   bool operator<(const Task &other) const { return t < other.t; }
   bool operator==(const Task &other) const { return t == other.t; }
@@ -36,12 +44,6 @@ void reverse_counting_sort(std::vector<Task> &array) {
     }
   }
 }
-
-struct Node {
-  size_t value;
-  Node *p, *l = nullptr, *r = nullptr;
-  Node(size_t value, Node *parent) : value(value), p(parent) {}
-};
 
 class TournamentTree {
   std::vector<size_t> tree;
@@ -97,13 +99,7 @@ public:
     }
     return 0;
   }
-  size_t Time() {
-    size_t t = 0;
-    for (const auto &layer : schedule) {
-      t += layer[0].t;
-    }
-    return t;
-  }
+
   int AddTasksFFDH(std::vector<Task> tasks) {
     schedule.clear();
     reverse_counting_sort(tasks);
@@ -117,6 +113,23 @@ public:
       schedule[idx].push_back(task);
     }
     return 0;
+  }
+
+  size_t Time() {
+    size_t t = 0;
+    for (const auto &layer : schedule) {
+      t += layer[0].t;
+    }
+    return t;
+  }
+
+  double error() {
+    double T = 0.0;
+    for (const auto &layer : schedule)
+      for (const auto &task : layer)
+        T += task.r * task.t;
+    T /= em_count;
+    return (Time() - T) / T;
   }
 
   friend std::ostream &operator<<(std::ostream &os, const Schedule &s) {
@@ -136,15 +149,78 @@ public:
   }
 };
 
+Task generate_random_task(std::random_device &gen,
+                          std::uniform_int_distribution<size_t> &dist_r,
+                          std::uniform_int_distribution<size_t> &dist_t) {
+  return Task(dist_t(gen), dist_r(gen));
+}
+
+std::vector<Task> generate_random_task_list(size_t max_r, size_t max_t,
+                                            size_t n) {
+  if (max_r == 0 || max_t == 0)
+    return std::vector<Task>();
+  std::random_device gen;
+  std::uniform_int_distribution<size_t> dist_r(1, max_r);
+  std::uniform_int_distribution<size_t> dist_t(1, max_t);
+  std::vector<Task> tasks;
+  for (size_t i = 0; i < n; i++) {
+    tasks.push_back(generate_random_task(gen, dist_r, dist_t));
+  }
+  return tasks;
+}
+
+std::string task_list_to_string(const std::vector<Task> &tasks) {
+  std::string out;
+  for (const auto &task : tasks) {
+    out += task.to_string() + "\n";
+  }
+  return out;
+}
+
+void string_to_file(const std::string &filename, const std::string &str) {
+  std::ofstream file(filename);
+  file << str;
+}
+
+std::string file_to_string(const std::string &filename) {
+  std::ifstream file(filename, std::ios::binary);
+  if (file) {
+    std::ostringstream os;
+    os << file.rdbuf();
+    return std::string(os.str());
+  }
+  return std::string();
+}
+
+std::vector<Task> string_to_task_list(const std::string &str) {
+  std::stringstream ss(str);
+  std::vector<Task> tasks;
+  size_t t, r;
+  while (ss >> t >> r) {
+    tasks.push_back(Task(t, r));
+  }
+  return tasks;
+}
+
+void generate_file_with_random_tasks(const std::string &filename, size_t max_r,
+                                     size_t max_t, size_t n) {
+  string_to_file(filename, task_list_to_string(
+                               generate_random_task_list(max_r, max_t, n)));
+}
+
 int main(int argc, char *argv[]) {
-  std::vector<Task> tasks = {Task(2, 1), Task(3, 2), Task(4, 3), Task(6, 1)};
-  Schedule sched(5);
-  if (sched.AddTasksFFDH(tasks)) {
+  Schedule sched(1024);
+  if (sched.AddTasksFFDH(generate_random_task_list(1024, 100, 1000))) {
     std::cerr << "Errrrr....\n";
     return 1;
   }
-  std::cout << sched.Time() << '\n';
-  std::cout << sched;
+  std::cout << "Time: " << sched.Time() << '\n';
+  std::cout << "Error: " << sched.error() << '\n';
+  generate_file_with_random_tasks("fileek", 1024, 100, 10);
+  std::vector<Task> tasks = string_to_task_list(file_to_string("fileek"));
+  for (const auto &task : tasks)
+    std::cout << task.to_string() << '\n';
+  // std::cout << sched;
   // std::vector<float> vec;
   // for (int i = 0; i < std::atoi(argv[1]); i++)
   //   vec.push_back(static_cast<float>(std::rand() % 10));
