@@ -37,6 +37,41 @@ void reverse_counting_sort(std::vector<Task> &array) {
   }
 }
 
+struct Node {
+  size_t value;
+  Node *p, *l = nullptr, *r = nullptr;
+  Node(size_t value, Node *parent) : value(value), p(parent) {}
+};
+
+class TournamentTree {
+  std::vector<size_t> tree;
+  size_t n_leaves;
+
+public:
+  TournamentTree(size_t n_tasks, size_t n_em)
+      : n_leaves(std::__bit_ceil(n_tasks)) {
+    tree.insert(tree.begin(), n_leaves * 2, n_em);
+  }
+  int find_first_fit(size_t r) {
+    if (tree[1] < r)
+      return -1;
+    size_t idx = 1;
+    while (idx < n_leaves) {
+      if (tree[idx * 2] >= r)
+        idx *= 2;
+      else
+        idx = idx * 2 + 1;
+    }
+    size_t em_idx = idx - n_leaves;
+    tree[idx] -= r;
+    while (idx > 1) {
+      idx /= 2;
+      tree[idx] = std::max(tree[idx * 2], tree[idx * 2 + 1]);
+    }
+    return em_idx;
+  }
+};
+
 class Schedule {
   std::vector<std::vector<Task>> schedule;
   size_t em_count;
@@ -44,6 +79,7 @@ class Schedule {
 public:
   Schedule(size_t em_count) : em_count(em_count) {}
   int AddTasksNFDH(std::vector<Task> tasks) {
+    schedule.clear();
     reverse_counting_sort(tasks);
     size_t current_layer = 0;
     size_t free_ems = em_count;
@@ -68,13 +104,28 @@ public:
     }
     return t;
   }
+  int AddTasksFFDH(std::vector<Task> tasks) {
+    schedule.clear();
+    reverse_counting_sort(tasks);
+    TournamentTree tree(tasks.size(), em_count);
+    for (const auto &task : tasks) {
+      int idx = tree.find_first_fit(task.r);
+      if (idx == -1)
+        return 1;
+      if (idx >= schedule.size())
+        schedule.resize(idx + 1);
+      schedule[idx].push_back(task);
+    }
+    return 0;
+  }
+
   friend std::ostream &operator<<(std::ostream &os, const Schedule &s) {
     size_t start_time = 0;
     size_t start_em = 1;
     for (const auto &layer : s.schedule) {
+      os << "t = " << start_time << "; ";
       for (const auto &task : layer) {
-        os << "t = " << start_time << ", m = " << start_em << "-"
-           << start_em + task.r - 1 << "; ";
+        os << "m = " << start_em << "-" << start_em + task.r - 1 << "; ";
         start_em += task.r;
       }
       os << '\n';
@@ -88,7 +139,10 @@ public:
 int main(int argc, char *argv[]) {
   std::vector<Task> tasks = {Task(2, 1), Task(3, 2), Task(4, 3), Task(6, 1)};
   Schedule sched(5);
-  sched.AddTasksNFDH(tasks);
+  if (sched.AddTasksFFDH(tasks)) {
+    std::cerr << "Errrrr....\n";
+    return 1;
+  }
   std::cout << sched.Time() << '\n';
   std::cout << sched;
   // std::vector<float> vec;
