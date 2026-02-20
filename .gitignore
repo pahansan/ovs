@@ -1,5 +1,8 @@
 main
 *.txt
+!*CMakeLists.txt
 *.out
 venv
 *.png
+*build*
+*.cache
