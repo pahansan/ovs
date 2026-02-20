@@ -1,7 +1,8 @@
-#include <files.hpp>
-#include <schedule.hpp>
-#include <task.hpp>
+#include "files.hpp"
+#include "schedule.hpp"
+#include "task.hpp"
 
+#include <chrono>
 #include <iostream>
 
 int main(int argc, char *argv[]) {
@@ -16,15 +17,13 @@ int main(int argc, char *argv[]) {
   std::vector<Task> tasks = string_to_task_list(file_to_string("fileek"));
   for (const auto &task : tasks)
     std::cout << task.to_string() << '\n';
-  // std::cout << sched;
-  // std::vector<float> vec;
-  // for (int i = 0; i < std::atoi(argv[1]); i++)
-  //   vec.push_back(static_cast<float>(std::rand() % 10));
-  // auto start = std::chrono::high_resolution_clock::now();
-  // reverse_counting_sort(vec);
-  // auto end = std::chrono::high_resolution_clock::now();
-  // std::cout << std::chrono::duration_cast<std::chrono::nanoseconds>(end -
-  // start)
-  //                  .count()
-  //           << '\n';
+  std::cout << sched;
+  std::vector<float> vec;
+  for (int i = 0; i < std::atoi(argv[1]); i++)
+    vec.push_back(static_cast<float>(std::rand() % 10));
+  auto start = std::chrono::high_resolution_clock::now();
+  auto end = std::chrono::high_resolution_clock::now();
+  std::cout << std::chrono::duration_cast<std::chrono::nanoseconds>(end - start)
+                   .count()
+            << '\n';
 }

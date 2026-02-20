@@ -1,5 +1,5 @@
-#include <schedule.hpp>
-#include <tournament_tree.hpp>
+#include "schedule.hpp"
+#include "tournament_tree.hpp"
 
 int Schedule::AddTasksNFDH(std::vector<Task> tasks) {
   schedule.clear();

@@ -1,7 +1,6 @@
-#include <sstream>
-#include <task.hpp>
-
+#include "task.hpp"
 #include <algorithm>
+#include <sstream>
 
 std::string Task::to_string() const {
   return std::to_string(t) + " " + std::to_string(r);
