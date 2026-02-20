@@ -5,18 +5,16 @@ import matplotlib.pyplot as plt
 
 
 def build_runtime_plots(input_dir, output_file):
-    # Проверка существования директории
     if not os.path.isdir(input_dir):
-        print(f"Ошибка: Директория {input_dir} не найдена.")
+        print(f"Error: {input_dir} not exists")
         return
 
     plt.figure(figsize=(10, 7))
 
-    # Получаем список файлов и сортируем их
     files = sorted([f for f in os.listdir(input_dir) if f.endswith('.txt')])
 
     if not files:
-        print("В директории нет .txt файлов.")
+        print("Can't find txt files")
         return
 
     for filename in files:
@@ -34,31 +32,26 @@ def build_runtime_plots(input_dir, output_file):
                     except ValueError:
                         continue
 
-        # Сортируем данные по количеству задач, чтобы линия на графике не "прыгала"
         data = sorted(zip(m_tasks, runtime))
         x_vals, y_vals = zip(*data)
 
-        # Имя файла для легенды
         label_name = os.path.splitext(filename)[0]
         plt.plot(x_vals, y_vals, marker='s', markersize=4, label=label_name)
 
-    # Оформление
-    plt.title('Зависимость времени выполнения от количества задач', fontsize=14)
-    plt.xlabel('Количество задач (m)', fontsize=12)
-    plt.ylabel('Время выполнения (сек)', fontsize=12)
+    plt.title('Зависимость t(m) времени выполнения от количества задач', fontsize=14)
+    plt.xlabel('Количество задач', fontsize=12)
+    plt.ylabel('Время выполнения, с', fontsize=12)
 
     plt.grid(True, which='both', linestyle='--', alpha=0.5)
     plt.legend(title="Алгоритм и параметры")
 
-    # Улучшаем компоновку, чтобы подписи не обрезались
     plt.tight_layout()
 
-    # Сохранение
     plt.savefig(output_file, dpi=300)
-    print(f"График зависимости времени сохранен в: {output_file}")
+    print(f"Plot saved: {output_file}")
 
 if __name__ == "__main__":
     if len(sys.argv) < 3:
-        print("Использование: python build_plots.py <input_dir> <output_png_name>")
+        print(f"Usage: python {sys.argv[1]} <input_dir> <output_png_name>")
     else:
         build_runtime_plots(sys.argv[1], sys.argv[2])
