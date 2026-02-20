@@ -1,5 +1,7 @@
+#include "exp_data.hpp"
 #include "files.hpp"
 #include "schedule.hpp"
+#include "strings.hpp"
 #include "task.hpp"
 #include <chrono>
 #include <cstddef>
@@ -7,21 +9,6 @@
 
 #include <iostream>
 #include <vector>
-
-enum AlgorithmType { NFDH, FFDH };
-
-std::vector<std::string> split(const std::string &str, char c = ' ') {
-  std::vector<std::string> result;
-  size_t start = 0;
-  size_t end = str.find(c);
-  while (end != std::string::npos) {
-    result.push_back(str.substr(start, end - start));
-    start = end + 1;
-    end = str.find(c, start);
-  }
-  result.push_back(str.substr(start));
-  return result;
-}
 
 int main(int argc, char *argv[]) {
   if (argc != 4) {
