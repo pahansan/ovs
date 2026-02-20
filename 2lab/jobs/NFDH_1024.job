@@ -1,0 +1,8 @@
+#!/bin/sh
+#SBATCH --nodes=1 --ntasks-per-node=1
+#SBATCH --partition=rh2288
+#SBATCH --job-name=nfdh_1024
+
+cd $SLURM_SUBMIT_DIR
+
+./build/bin/exp1 tasks 1024 NFDH > exp1_result/NFDH_1024.txt

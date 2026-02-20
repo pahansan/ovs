@@ -1,6 +1,7 @@
 main
 *.txt
 !*CMakeLists.txt
+!*requirements.txt
 *.out
 venv
 *.png

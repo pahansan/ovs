@@ -1,0 +1,8 @@
+#!/bin/sh
+#SBATCH --nodes=1 --ntasks-per-node=1
+#SBATCH --partition=rh2288
+#SBATCH --job-name=ffdh_4096
+
+cd $SLURM_SUBMIT_DIR
+
+./build/bin/exp1 tasks 4096 FFDH > exp1_result/FFDH_4096.txt
