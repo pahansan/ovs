@@ -1,0 +1,3 @@
+add_executable(generate_file_with_tasks main.cpp)
+
+target_link_libraries(generate_file_with_tasks PRIVATE my_lib)
