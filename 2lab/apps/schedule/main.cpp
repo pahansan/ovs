@@ -34,7 +34,7 @@ int main(int argc, char *argv[]) {
                  "machines count\n";
     return 1;
   }
-  std::vector<Task> tasks = read_tasks_from_file(filename);
+  std::vector<Task> tasks = read_tasks_from_file(filepath);
   if (tasks.empty()) {
     std::cerr << "Error: can't read file '" << filename << "'\n";
     return 1;
