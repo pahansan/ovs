@@ -9,10 +9,9 @@ std::string to_scientific_string(double value) {
     oss << std::scientific << std::setprecision(0) << value;
     std::string s = oss.str();
 
-    // Убираем знак + в экспоненте если нужно
     size_t e_pos = s.find('e');
     if (e_pos != std::string::npos && s[e_pos + 2] == '+') {
-        s.erase(e_pos + 2, 1); // удаляем '+'
+        s.erase(e_pos + 2, 1);
     }
     return s;
 }
